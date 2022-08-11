@@ -27,7 +27,7 @@ list_of_news = parser(URL)
 
 @bot.message_handler(commands=["start"])
 def start(message):
-    mess = f"<b>Hello, {message.from_user.first_name}.</b> I'm only a test bot, but I'll remind you things that have to be done"
+    mess = f"<b>Hello, {message.from_user.first_name}.</b> I'm only a test bot, but I'll remind you things that have to be done (I can handle only tasks during this day)"
     bot.send_message(message.chat.id, mess, parse_mode="html")
     sti = open("sticker.webp", "rb")
     bot.send_sticker(message.chat.id, sti)
@@ -61,13 +61,16 @@ def get_time(message):
     
     
 def send_with_delay(message,times):
-    if  (int(times[0:2]) <=24) and (int(times[3:5])<=60):
-        time.sleep(
-            (int(times[0:2])* 360 + int(times[3:5])*60 - (datetime.now().hour*360 + datetime.now().minute * 60)))
-        
-        bot.send_message(message.chat.id, f"You have to {note}!")
-    else: bot.send_message(message.chat.id, f"Incorrect time format")
-
+    t = times.split()  
+    if len(t)==2 and (t[0].isdigit()) and (t[1].isdigit()): 
+        if  (int(t[0]) <=24) and (int(t[1])<=60) :
+            marked = int(t[0])*360 + int(t[1])*60
+            current = datetime.now().hour*360 + datetime.now().minute * 60
+            time.sleep(
+                marked - current)            
+            bot.send_message(message.chat.id, f"You have to {note}!")
+        else: bot.send_message(message.chat.id, f"Incorrect time format")
+    else : bot.send_message(message.chat.id, f"Incorrect time format")
 
 
 @bot.message_handler(commands=["news"])
